@@ -1,10 +1,15 @@
 # Cybersecurity Lab by Diego
 
-This repository contains a collection of cybersecurity tasks and analysis exercises performed as part of my learning and professional development as a SOC Analyst (Junior/Intermediate level).
+This repository contains a collection of cybersecurity tasks and analysis exercises performed as part of my learning and professional development as a SOC Analyst.
 
 ## 📁 Repository Structure
 /cyber-lab/
 │
+├── incident-response
+
+
+
+## 🚧 Work in Progress
 ├── threat-analysis/ # Malware and IOC analysis
 ├── sql-injection/ # SQL Injection tests and exercises
 ├── siem-analysis/ # Event analysis and detection rules (WIP)
@@ -13,15 +18,17 @@ This repository contains a collection of cybersecurity tasks and analysis exerci
 
 
 ## 🧪 Purpose
-
 The goal of this project is to simulate real-world cybersecurity tasks using public tools and freely available malware samples. Each task is documented in detail, following a professional and structured format.
 
 ## 🔧 Tools Used
-
 - VirusTotal
-- Any.run
-- Hybrid Analysis
 - AbuseIPDB
+- Any.run
+
+
+
+## 🚧 Work in Progress
+- Hybrid Analysis
 - CyberChef
 - Wireshark, Nmap (future)
 - SQLmap (future)
