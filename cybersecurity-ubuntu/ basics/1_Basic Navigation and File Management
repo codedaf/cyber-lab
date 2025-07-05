@@ -1,0 +1,19 @@
+Basic Navigation and File Management 
+
+1. Create a folder called practice1:  	mkdir practice1
+2. Enter the folder: 			              cd practice1
+3. Create a text file named notes.txt : touch notes.txt
+4. Add some text inside notes.txt :     echo "This is my first Linux practice file." > notes.txt
+5. Display the contents of the file:    cat notes.txt
+6.Append a new line to the file :      	echo "I am learning Ubuntu basics." >> notes.txt
+7.Create a subfolder inside practice1: 	mkdir backup
+8. Copy notes.txt to the backup folder:	cp notes.txt backup/
+9.  Rename the original notes.txt to notes_old.txt       mv notes.txt notes_old.txt
+10. Delete the renamed file: 		        rm notes_old.txt
+11. Go back to your home directory   	  cd ~
+
+12. Verification
+ls practice1 → Deberías ver solo la carpeta backup
+ls practice1/backup → Deberías ver el archivo notes.txt
+
+
