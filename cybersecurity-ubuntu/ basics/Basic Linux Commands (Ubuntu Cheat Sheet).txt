@@ -1,0 +1,35 @@
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>> Basic Linux Commands (Ubuntu Cheat Sheet)>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+-------------- Navigation & File Management ---------------------------
+pwd			          Print current working directory
+ls			          List files and folders in current directory
+ls -l			        Long listing format with details
+cd folder_name		Change directory to a folder
+cd ..			        Go up one directory level
+mkdir name		    Create a new folder
+rm file.txt		    Delete a file
+rm -r folder		  Delete a folder and its contents
+cp file1 file2		Copy file1 to file2
+mv file1 newname	Move or rename a file
+-------------- Viewing File Contents --------------
+cat file.txt		  Show file content
+less file.txt		  View file one page at a time
+head file.txt		  Show the first 10 lines
+tail file.txt		  Show the last 10 lines
+tail -f file.log	Live view of file changes (good for logs)
+--------------Processes and System Info --------------
+top			          Real-time list of processes
+htop			        Enhanced version of top (install with sudo apt install htop)
+ps aux			      Show all running processes
+kill PID		      Kill a process by its ID
+whoami			      Show current username
+uptime			      Show how long the system has been running
+--------------Networking -----------------------------
+ip a		   	      Show network interfaces and IP addresses
+ping 8.8.8.8		  Test connectivity to an IP
+netstat -tuln		  Show listening ports (may require sudo apt install net-tools)
+curl ifconfig.me	Show public IP address
+-------------Console and Cleanup-----------------------
+clear		          Clear the terminal screen
+Ctrl + L	        Shortcut to clear the screen
