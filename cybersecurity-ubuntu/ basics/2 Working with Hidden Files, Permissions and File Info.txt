@@ -1,0 +1,27 @@
+Working with Hidden Files, Permissions and File Info
+
+- Create hidden files, View file info, Change permissions
+- Use useful commands like `ls -la`, `chmod`, `stat`
+
+
+1. Go to your home directory : 			cd ~
+2. Create a new folder called 'practice2' and enter imkdir practice2 cd practice2
+3. Create a hidden file called '.secret.txt':    touch .secret.txt
+4. List all files, including hidden ones:      	ls -la
+5. Add text to '.secret.txt':		        echo "This is a hidden file." > .secret.txt
+6. See the content of the hidden file:      	cat .secret.txt
+7. Check file details:         			stat .secret.txt
+8. Remove read permissions for others:     	chmod o-r .secret.txt
+9. List the file again to see permission changes: ls -l
+10. Try to read the file as another user (if available)
+# (Optional step)
+
+11. Restore full permissions for the owner: chmod u+rwx .secret.txt
+12. Create a script file and make it executable: echo "echo Hello from Ubuntu!" > hello.sh
+chmod +x hello.sh
+./hello.sh
+
+Expected Results:
+- A hidden file named '.secret.txt' with text inside
+- A script file 'hello.sh' that prints a message
+- Understanding how file permissions work (read/write/execute)
