@@ -1,0 +1,6 @@
+____________________________________________________________________________________________________________
+ 4: File Permissions and Ownership
+Objective: Understand how file permissions work and how to modify ownership and access rights.
+Level: 🟡 Beginner – Intermediate
+Main commands: chmod, chown, ls -l, echo
+____________________________________________________________________________________________________________
