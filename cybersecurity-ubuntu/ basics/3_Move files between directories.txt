@@ -1,0 +1,37 @@
+3: Network and Process Monitoring
+Objective: Observe running processes and check basic network connectivity.
+Level: Beginner – Intermediate
+Main commands: htop, ping, top, ps aux, kill
+Practice using the commands `mv`, `mkdir`, `ls`, `cd`, and `cat`.
+
+1. Create a new working directory:
+    mkdir practice3
+    cd practice3
+
+2. Create two subdirectories:
+    mkdir folderA folderB
+
+3. Create a file inside `folderA`:
+    cd folderA
+    echo "This file will be moved to folderB" > file3.txt
+    cat file3.txt
+
+4. Move the file to `folderB`:
+    mv file3.txt ../folderB/
+
+5. Verify that the file was moved correctly:
+    cd ../folderB
+    ls
+    cat file3.txt
+
+6. Return to your home directory (optional cleanup):
+    cd ~
+
+Optional Challenge:
+-------------------
+Try moving a whole folder:
+    mv folderB ~/Desktop/
+    (If Desktop does not exist, you can create and use another folder, like ~/practice3_backup/)
+
+
+
