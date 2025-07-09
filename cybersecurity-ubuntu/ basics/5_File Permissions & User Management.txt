@@ -1,0 +1,41 @@
+5 File Permissions & User Management  
+Objective: Understand and modify Linux file permissions using chmod, chown, and manage users/groups. 
+This is key for hardening systems and restricting access.  
+Level: Intermediate
+
+1. Create a folder for this exercise:  
+	mkdir ~/exercise5_permissions  
+	cd ~/exercise5_permissions  
+
+2. Create a test file:  
+	touch secret.txt  
+	echo "Top Secret Info" > secret.txt  
+
+3. Check current permissions:  
+	ls -l secret.txt  
+
+4. Remove read permission for group and others:  
+	chmod go-r secret.txt  
+
+5. Make the file executable only by the owner:  
+	chmod u+x secret.txt  
+
+6. Create a new user (you may need sudo):  
+	sudo adduser testuser  
+
+7. Check owner of the file:  
+	ls -l secret.txt  
+
+8. Change the ownership to the new user:  
+	sudo chown testuser:testuser secret.txt  
+
+9. Switch to the new user and try accessing the file:  
+	su - testuser  
+	cd /home/[your_user]/exercise5_permissions  
+	cat secret.txt  
+
+10. Exit testuser session:  
+	exit  
+
+11. Remove user (optional cleanup):  
+	sudo deluser testuser  
