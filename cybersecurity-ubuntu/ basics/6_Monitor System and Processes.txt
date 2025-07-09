@@ -1,0 +1,22 @@
+Monitor System and Processes
+Explore commands to monitor active processes, CPU usage, disk space, and memory in Ubuntu.
+
+1. List all running processes
+ps aux
+
+2. Filter for a specific process (e.g., bash)
+ps aux | grep bash
+
+3. View real-time system usage
+top
+
+4. Install and launch 'htop' (interactive process viewer)
+sudo apt update
+sudo apt install htop
+htop
+
+5. Check disk usage
+df -h
+
+6. Check memory usage
+free -h
