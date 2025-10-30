@@ -1,0 +1,218 @@
+// -------------------------------------------------------------
+// 🔹 Función principal de validación HTTPS, SSL, redirección y cabeceras
+// -------------------------------------------------------------
+if ( ! function_exists('Val_https') ) {
+
+    add_action('wpforms_process_complete', 'Val_https', 10, 4);
+
+    function Val_https($fields, $entry, $form_data, $entry_id) {
+        $url = '';
+
+        // Buscar el campo del formulario que contenga la URL
+        foreach ($fields as $field) {
+            if (stripos($field['name'], 'web') !== false || stripos($field['name'], 'url') !== false) {
+                $url = trim($field['value']);
+                break;
+            }
+        }
+
+        if (empty($url)) {
+            $GLOBALS['resultado_scan'] = "⚠️ No se recibió ninguna URL en el formulario.";
+            return;
+        }
+
+        // Normalizar formato de URL
+        if (!preg_match('#^https?://#', $url)) {
+            $url = 'https://' . $url;
+        }
+
+        // -------------------------------------------------------------
+        // 🔹 Verificación de DNS (dominio existente)
+        // -------------------------------------------------------------
+        $host = parse_url($url, PHP_URL_HOST);
+        if (!$host) {
+            $GLOBALS['resultado_scan'] = "❌ No se pudo analizar el dominio del sitio.";
+            return;
+        }
+
+        $ip = gethostbyname($host);
+        if ($ip === $host) {
+            $GLOBALS['resultado_scan'] = "⚠️ El dominio ingresado no existe o no se puede resolver.";
+            return;
+        }
+
+        // -------------------------------------------------------------
+        // 🔹 Verificación HTTP/HTTPS (respuesta del sitio)
+        // -------------------------------------------------------------
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_NOBODY => false,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 10,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_USERAGENT => 'Mozilla/5.0 (CyberSec Sentinel Scanner)',
+        ]);
+        $success = curl_exec($ch);
+        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($http_code >= 200 && $http_code < 400) {
+            $resultado = "✅ The website is active, reachable, and responds securely (HTTP {$http_code}).";
+        } elseif ($http_code >= 400 && $http_code < 500) {
+            $resultado = "⚠️ Client-side error detected (HTTP {$http_code}).";
+        } elseif ($http_code >= 500) {
+            $resultado = "❌ Server-side error detected (HTTP {$http_code}).";
+        } elseif ($http_code == 0) {
+            $resultado = "⚠️ The site could not be reached or blocked the connection.";
+        } else {
+            $resultado = "⚠️ Unexpected HTTP response (HTTP {$http_code}).";
+        }
+
+        // -------------------------------------------------------------
+        // 🔹 Validación del certificado SSL
+        // -------------------------------------------------------------
+        if (function_exists('verificar_ssl_expiracion')) {
+            $ssl_info = verificar_ssl_expiracion($url);
+            $resultado .= "\n\n" . $ssl_info;
+        }
+
+        // -------------------------------------------------------------
+        // 🔹 Verificación de redirección forzada a HTTPS
+        // -------------------------------------------------------------
+        if (function_exists('verificar_redireccion_https')) {
+            $redirect_info = verificar_redireccion_https($url);
+            $resultado .= "\n\n" . $redirect_info;
+        }
+
+        // -------------------------------------------------------------
+        // 🔹 Cabeceras HTTP de seguridad
+        // -------------------------------------------------------------
+        if (function_exists('verificar_cabeceras_seguridad')) {
+            $headers_info = verificar_cabeceras_seguridad($url);
+            $resultado .= "\n\n" . $headers_info;
+        }
+
+        // Guardar resultado global (para el bloque de visualización)
+        $GLOBALS['resultado_scan'] = $resultado;
+    }
+}
+
+/**
+ * ✅ Check if website forces redirection from HTTP → HTTPS
+ */
+function verificar_redireccion_https($url) {
+    $host = parse_url($url, PHP_URL_HOST);
+    if (!$host) return "⚠️ Invalid URL provided.";
+
+    $http_url = "http://{$host}";
+    $ch = curl_init($http_url);
+    curl_setopt_array($ch, [
+        CURLOPT_NOBODY => true,
+        CURLOPT_FOLLOWLOCATION => false,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 8,
+        CURLOPT_HEADER => true,
+        CURLOPT_USERAGENT => 'Mozilla/5.0 (CyberSec Sentinel HTTPS Redirect Check)',
+    ]);
+
+    $response = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($response === false || $http_code == 0) {
+        return "⚠️ The site could not be reached for HTTP connection.";
+    }
+
+    preg_match('/Location:\s*(.*)\s*/i', $response, $matches);
+    $location = isset($matches[1]) ? trim($matches[1]) : '';
+
+    if ($location && stripos($location, 'https://') === 0) {
+        return "✅ The website correctly redirects from HTTP to HTTPS.";
+    } elseif ($location && stripos($location, 'http://') === 0) {
+        return "⚠️ Redirect detected, but not to HTTPS: {$location}";
+    } elseif ($http_code >= 300 && $http_code < 400 && empty($location)) {
+        return "⚠️ Redirection detected but destination not clear (no Location header).";
+    } else {
+        return "❌ The website does not enforce HTTPS (no redirect detected).";
+    }
+}
+
+// -------------------------------------------------------------
+// 🔹 Bloque visual del resultado del escáner (versión mejorada)
+// -------------------------------------------------------------
+add_filter('wpforms_frontend_confirmation_message', function($message, $form_data, $fields, $entry_id) {
+
+    if (empty($GLOBALS['resultado_scan'])) {
+        return "<div style='text-align:center; padding:20px; font-size:18px; color:#555;'>
+            ⚠️ No scan result generated. Please try again.
+        </div>";
+    }
+
+    // 🔹 Limpieza de saltos de línea
+    $resultado_limpio = nl2br(esc_html($GLOBALS['resultado_scan']));
+
+    // 🔹 Reducción de espacios entre líneas (CSS + line-height)
+    return "
+    <div style='
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        width:100%;
+        margin:25px auto;
+        opacity:0;
+        animation:fadeInResult 1s ease-in forwards;
+    '>
+      <div style='
+          max-width:800px;
+          width:90%;
+          background:#f9fbff;
+          color:#111;
+          border-left:5px solid #0073aa;
+          border-radius:12px;
+          padding:25px;
+          font-family:Arial,sans-serif;
+          font-size:17px;
+          font-weight:500;
+          text-align:left;
+          line-height:1.45;
+          box-shadow:0 2px 8px rgba(0,0,0,0.12);
+      '>
+        <h2 style='
+            color:#0073aa;
+            margin-bottom:10px;
+            text-align:center;
+            font-size:22px;
+            font-weight:600;
+        '>🔍 Web Security Scan Report</h2>
+
+        <div style='
+            text-align:left;
+            color:#222;
+            font-size:16px;
+            white-space:pre-wrap;
+            margin-top:10px;
+        '>$resultado_limpio</div>
+
+        <div style='
+            text-align:center;
+            margin-top:20px;
+            font-size:14px;
+            color:#666;
+        '>
+                        ⚙️ Scan performed automatically by <strong>ROO Secure</strong>.
+        </div>
+      </div>
+    </div>
+
+    <style>
+      @keyframes fadeInResult {
+        0% { opacity:0; transform:translateY(8px); }
+        100% { opacity:1; transform:translateY(0); }
+      }
+      @media (max-width:600px) {
+        .scan-result-box { padding:20px; font-size:15px; }
+      }
+    </style>
+    ";
+}, 10, 4);
+
